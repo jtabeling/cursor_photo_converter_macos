@@ -282,9 +282,9 @@ actor ConversionService {
             print("Video has NO GPS data")
         }
         
-        // Try direct PHAssetResource export first as it's more reliable for preserving metadata
+        // Try AVAssetExportSession first as it better preserves metadata
         do {
-            try await exportVideoWithAssetResource(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
+            try await exportVideoWithExportSession(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
             
             // Update file timestamps
             do {
@@ -309,9 +309,9 @@ actor ConversionService {
         catch {
             print("First method failed: \(error.localizedDescription). Trying fallback method...")
             
-            // If direct resource export failed, try the export session approach
+            // If export session failed, try the direct resource export approach
             do {
-                try await exportVideoWithExportSession(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
+                try await exportVideoWithAssetResource(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
                 
                 // Update file timestamps
                 do {
@@ -354,9 +354,10 @@ actor ConversionService {
                     print("PHAssetResource export succeeded")
                     
                     // After successful export, update the metadata on the exported file
+                    // Only update if we need to add title or ensure GPS data is present
                     Task {
                         do {
-                            try await self.updateVideoMetadata(at: outputURL, creationDate: creationDate, location: asset.location)
+                            try await self.updateVideoMetadataPreservingExisting(at: outputURL, creationDate: creationDate, location: asset.location)
                             continuation.resume()
                         } catch {
                             print("Metadata update failed: \(error.localizedDescription)")
@@ -369,7 +370,7 @@ actor ConversionService {
         }
     }
     
-    // Fallback export method using PHImageManager.requestExportSession with enhanced metadata handling
+    // Primary export method using PHImageManager.requestExportSession with enhanced metadata handling
     private func exportVideoWithExportSession(asset: PHAsset, outputURL: URL, creationDate: Date) async throws {
         print("Trying export session approach")
         
@@ -394,13 +395,69 @@ actor ConversionService {
                     return
                 }
                 
-                // Configure export
-                exportSession.outputURL = outputURL
-                exportSession.outputFileType = .mov
+                // Get the AVAsset to access its metadata
+                let avAsset = exportSession.asset
                 
-                // Start export and apply metadata afterwards
+                // Get existing metadata from the original asset
                 Task {
                     do {
+                        let existingMetadata = await avAsset.metadata
+                        print("Original asset metadata count: \(existingMetadata.count)")
+                        
+                        // Check if we have GPS data in the original
+                        let hasOriginalGPS = existingMetadata.contains { item in
+                            return item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationISO6709 ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationName ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationNote ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationRole ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationBody ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationDate ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationCountry ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationProvince ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationCity ||
+                                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationSublocation
+                        }
+                        
+                        print("Original asset has GPS data: \(hasOriginalGPS)")
+                        
+                        // Prepare metadata for export
+                        var exportMetadata = existingMetadata
+                        
+                        // Add title metadata
+                        let filenameWithoutExtension = self.filenameDateFormatter.string(from: creationDate)
+                        let titleItem = AVMutableMetadataItem()
+                        titleItem.identifier = AVMetadataIdentifier.quickTimeMetadataTitle
+                        titleItem.value = filenameWithoutExtension as NSString
+                        titleItem.extendedLanguageTag = "und"
+                        exportMetadata.append(titleItem)
+                        
+                        // Add GPS data if missing and we have location data
+                        if !hasOriginalGPS, let location = asset.location {
+                            print("Adding GPS data to export metadata")
+                            let coordinatesString = String(format: "%+.6f%+.6f/", location.coordinate.latitude, location.coordinate.longitude)
+                            
+                            let gpsItem = AVMutableMetadataItem()
+                            gpsItem.identifier = AVMetadataIdentifier.quickTimeMetadataLocationISO6709
+                            gpsItem.value = coordinatesString as NSString
+                            gpsItem.extendedLanguageTag = "und"
+                            exportMetadata.append(gpsItem)
+                            
+                            if location.altitude != 0 {
+                                let altitudeItem = AVMutableMetadataItem()
+                                altitudeItem.identifier = AVMetadataIdentifier(rawValue: "com.apple.quicktime.altitude")
+                                altitudeItem.value = NSNumber(value: location.altitude)
+                                altitudeItem.extendedLanguageTag = "und"
+                                exportMetadata.append(altitudeItem)
+                            }
+                        }
+                        
+                        // Configure export with metadata
+                        exportSession.outputURL = outputURL
+                        exportSession.outputFileType = .mov
+                        exportSession.metadata = exportMetadata
+                        
+                        print("Export metadata count: \(exportMetadata.count)")
+                        
                         // Use a continuation to wait for the export
                         try await withCheckedThrowingContinuation { (exportContinuation: CheckedContinuation<Void, Error>) in
                             exportSession.exportAsynchronously {
@@ -421,8 +478,6 @@ actor ConversionService {
                             }
                         }
                         
-                        // After successful export, update the metadata to ensure it's properly preserved
-                        try await self.updateVideoMetadata(at: outputURL, creationDate: creationDate, location: asset.location)
                         continuation.resume()
                     } catch {
                         continuation.resume(throwing: error)
@@ -432,7 +487,135 @@ actor ConversionService {
         }
     }
     
-    // Helper method to update metadata on an exported video file
+    // Helper method to update metadata on an exported video file while preserving existing metadata
+    private func updateVideoMetadataPreservingExisting(at fileURL: URL, creationDate: Date, location: CLLocation?) async throws {
+        // Create an AVAsset from the exported file
+        let asset = AVAsset(url: fileURL)
+        
+        // Get all existing metadata
+        var allMetadata = await asset.metadata
+        print("Original metadata count: \(allMetadata.count)")
+        
+        // Print debugging information about existing metadata
+        for (index, item) in allMetadata.enumerated() {
+            if let identifier = item.identifier {
+                let valueString = item.value?.description ?? "nil"
+                print("Metadata[\(index)]: \(identifier.rawValue) = \(valueString)")
+            }
+        }
+        
+        // Check if we already have GPS data
+        let hasExistingGPS = allMetadata.contains { item in
+            return item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationISO6709 ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationName ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationNote ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationRole ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationBody ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationDate ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationCountry ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationProvince ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationCity ||
+                   item.identifier == AVMetadataIdentifier.quickTimeMetadataLocationSublocation
+        }
+        
+        print("Has existing GPS data: \(hasExistingGPS)")
+        
+        // Only update title metadata if it doesn't match our desired format
+        let filenameWithoutExtension = filenameDateFormatter.string(from: creationDate)
+        let hasCorrectTitle = allMetadata.contains { item in
+            return item.identifier == AVMetadataIdentifier.quickTimeMetadataTitle &&
+                   item.value as? String == filenameWithoutExtension
+        }
+        
+        // If we have existing GPS data and correct title, no need to re-export
+        if hasExistingGPS && hasCorrectTitle {
+            print("Video already has correct GPS data and title, skipping metadata update")
+            return
+        }
+        
+        // Create a temporary output file URL
+        let tempFilename = UUID().uuidString + ".mov"
+        let tempURL = fileURL.deletingLastPathComponent().appendingPathComponent(tempFilename)
+        
+        // Create an export session to add metadata
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+            throw ConversionError.videoMetadataUpdateFailed("Failed to create export session", nil)
+        }
+        
+        // Only remove metadata items we plan to replace to avoid duplication
+        allMetadata.removeAll { item in
+            return item.identifier == AVMetadataIdentifier.quickTimeMetadataTitle
+        }
+        
+        // Add our new title metadata if needed
+        if !hasCorrectTitle {
+            let titleItem = AVMutableMetadataItem()
+            titleItem.identifier = AVMetadataIdentifier.quickTimeMetadataTitle
+            titleItem.value = filenameWithoutExtension as NSString
+            titleItem.extendedLanguageTag = "und"
+            allMetadata.append(titleItem)
+        }
+        
+        // Add GPS data only if it's missing and we have location data
+        if !hasExistingGPS, let location = location {
+            print("Adding missing GPS data")
+            // GPS coordinates in ISO 6709 format: ±DD.DDDD±DDD.DDDD/
+            let coordinatesString = String(format: "%+.6f%+.6f/", location.coordinate.latitude, location.coordinate.longitude)
+            
+            // Create GPS coordinates metadata item
+            let gpsItem = AVMutableMetadataItem()
+            gpsItem.identifier = AVMetadataIdentifier.quickTimeMetadataLocationISO6709
+            gpsItem.value = coordinatesString as NSString
+            gpsItem.extendedLanguageTag = "und"
+            allMetadata.append(gpsItem)
+            
+            // Create altitude metadata if available
+            if location.altitude != 0 {
+                let altitudeItem = AVMutableMetadataItem()
+                altitudeItem.identifier = AVMetadataIdentifier(rawValue: "com.apple.quicktime.altitude")
+                altitudeItem.value = NSNumber(value: location.altitude)
+                altitudeItem.extendedLanguageTag = "und"
+                allMetadata.append(altitudeItem)
+            }
+        }
+        
+        // Apply all metadata to the export session
+        exportSession.metadata = allMetadata
+        print("Final metadata count: \(allMetadata.count)")
+        
+        // Configure export
+        exportSession.outputURL = tempURL
+        exportSession.outputFileType = .mov
+        
+        // Export asynchronously
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            exportSession.exportAsynchronously {
+                switch exportSession.status {
+                case .completed:
+                    do {
+                        // Replace original file with the updated one
+                        if FileManager.default.fileExists(atPath: fileURL.path) {
+                            try FileManager.default.removeItem(at: fileURL)
+                        }
+                        try FileManager.default.moveItem(at: tempURL, to: fileURL)
+                        print("Successfully updated video metadata")
+                        continuation.resume()
+                    } catch {
+                        print("Error replacing file after metadata update: \(error)")
+                        continuation.resume(throwing: error)
+                    }
+                case .failed:
+                    continuation.resume(throwing: exportSession.error ?? ConversionError.videoMetadataUpdateFailed("Export failed", nil))
+                case .cancelled:
+                    continuation.resume(throwing: ConversionError.videoMetadataUpdateFailed("Export was cancelled", nil))
+                default:
+                    continuation.resume(throwing: ConversionError.videoMetadataUpdateFailed("Unexpected export status", nil))
+                }
+            }
+        }
+    }
+    
+    // Legacy helper method to update metadata on an exported video file (kept for compatibility)
     private func updateVideoMetadata(at fileURL: URL, creationDate: Date, location: CLLocation?) async throws {
         // Create an AVAsset from the exported file
         let asset = AVAsset(url: fileURL)
