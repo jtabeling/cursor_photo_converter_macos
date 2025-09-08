@@ -282,6 +282,13 @@ actor ConversionService {
             print("Video has NO GPS data")
         }
         
+        // Also check the asset's metadata directly for debugging
+        let assetResources = PHAssetResource.assetResources(for: asset)
+        print("Asset resources count: \(assetResources.count)")
+        for resource in assetResources {
+            print("Resource type: \(resource.type.rawValue), filename: \(resource.originalFilename)")
+        }
+        
         // Try AVAssetExportSession first as it better preserves metadata
         do {
             try await exportVideoWithExportSession(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
@@ -332,7 +339,7 @@ actor ConversionService {
         }
     }
     
-    // Primary export method now uses the asset resource directly to better preserve metadata
+    // Fallback export method using PHAssetResource - this should preserve metadata better
     private func exportVideoWithAssetResource(asset: PHAsset, outputURL: URL, creationDate: Date) async throws {
         // Get the video resource from the asset
         guard let assetResource = PHAssetResource.assetResources(for: asset).first(where: { $0.type == .video }) else {
@@ -353,11 +360,48 @@ actor ConversionService {
                 } else {
                     print("PHAssetResource export succeeded")
                     
-                    // After successful export, update the metadata on the exported file
-                    // Only update if we need to add title or ensure GPS data is present
+                    // After successful export, check if we need to update metadata
                     Task {
                         do {
-                            try await self.updateVideoMetadataPreservingExisting(at: outputURL, creationDate: creationDate, location: asset.location)
+                            // Check what metadata was preserved in the exported file
+                            let exportedAsset = AVAsset(url: outputURL)
+                            let exportedMetadata = try await exportedAsset.load(.metadata)
+                            print("Exported file metadata count: \(exportedMetadata.count)")
+                            
+                            // Print all exported metadata for debugging
+                            for (index, item) in exportedMetadata.enumerated() {
+                                if let identifier = item.identifier {
+                                    let valueString = (try? await item.load(.value))?.description ?? "nil"
+                                    print("Exported Metadata[\(index)]: \(identifier.rawValue) = \(valueString)")
+                                }
+                            }
+                            
+                            // Check if GPS data was preserved
+                            var hasGPSInExported = false
+                            for item in exportedMetadata {
+                                guard let identifier = item.identifier else { continue }
+                                if identifier == AVMetadataIdentifier.quickTimeMetadataLocationISO6709 ||
+                                   identifier == AVMetadataIdentifier.quickTimeMetadataLocationName ||
+                                   identifier == AVMetadataIdentifier.quickTimeMetadataLocationNote ||
+                                   identifier == AVMetadataIdentifier.quickTimeMetadataLocationRole ||
+                                   identifier == AVMetadataIdentifier.quickTimeMetadataLocationBody ||
+                                   identifier == AVMetadataIdentifier.quickTimeMetadataLocationDate {
+                                    hasGPSInExported = true
+                                    print("GPS metadata preserved in exported file: \(identifier.rawValue)")
+                                    break
+                                }
+                            }
+                            
+                            if hasGPSInExported {
+                                print("GPS metadata was preserved during PHAssetResource export")
+                                // Only update title if needed
+                                try await self.updateVideoMetadataPreservingExisting(at: outputURL, creationDate: creationDate, location: nil)
+                            } else {
+                                print("GPS metadata was NOT preserved, attempting to add it")
+                                // Try to add GPS data from PHAsset location
+                                try await self.updateVideoMetadataPreservingExisting(at: outputURL, creationDate: creationDate, location: asset.location)
+                            }
+                            
                             continuation.resume()
                         } catch {
                             print("Metadata update failed: \(error.localizedDescription)")
@@ -404,6 +448,14 @@ actor ConversionService {
                         let existingMetadata = try await avAsset.load(.metadata)
                         print("Original asset metadata count: \(existingMetadata.count)")
                         
+                        // Print all existing metadata for debugging
+                        for (index, item) in existingMetadata.enumerated() {
+                            if let identifier = item.identifier {
+                                let valueString = (try? await item.load(.value))?.description ?? "nil"
+                                print("Original Metadata[\(index)]: \(identifier.rawValue) = \(valueString)")
+                            }
+                        }
+                        
                         // Check if we have GPS data in the original
                         var hasOriginalGPS = false
                         for item in existingMetadata {
@@ -415,16 +467,22 @@ actor ConversionService {
                                identifier == AVMetadataIdentifier.quickTimeMetadataLocationBody ||
                                identifier == AVMetadataIdentifier.quickTimeMetadataLocationDate {
                                 hasOriginalGPS = true
+                                print("Found existing GPS metadata: \(identifier.rawValue)")
                                 break
                             }
                         }
                         
                         print("Original asset has GPS data: \(hasOriginalGPS)")
                         
-                        // Prepare metadata for export
+                        // Prepare metadata for export - start with ALL existing metadata
                         var exportMetadata = existingMetadata
                         
-                        // Add title metadata
+                        // Remove any existing title metadata to avoid duplicates
+                        exportMetadata.removeAll { item in
+                            return item.identifier == AVMetadataIdentifier.quickTimeMetadataTitle
+                        }
+                        
+                        // Add our new title metadata
                         let filenameWithoutExtension = self.filenameDateFormatter.string(from: creationDate)
                         let titleItem = AVMutableMetadataItem()
                         titleItem.identifier = AVMetadataIdentifier.quickTimeMetadataTitle
@@ -432,9 +490,9 @@ actor ConversionService {
                         titleItem.extendedLanguageTag = "und"
                         exportMetadata.append(titleItem)
                         
-                        // Add GPS data if missing and we have location data
+                        // Add GPS data if missing and we have location data from PHAsset
                         if !hasOriginalGPS, let location = asset.location {
-                            print("Adding GPS data to export metadata")
+                            print("Adding GPS data to export metadata from PHAsset location")
                             let coordinatesString = String(format: "%+.6f%+.6f/", location.coordinate.latitude, location.coordinate.longitude)
                             
                             let gpsItem = AVMutableMetadataItem()
@@ -450,6 +508,8 @@ actor ConversionService {
                                 altitudeItem.extendedLanguageTag = "und"
                                 exportMetadata.append(altitudeItem)
                             }
+                        } else if hasOriginalGPS {
+                            print("Preserving existing GPS metadata from original asset")
                         }
                         
                         // Configure export with metadata
