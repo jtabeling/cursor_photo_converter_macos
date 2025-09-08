@@ -1,0 +1,17 @@
+# Project Intelligence: Photo Converter
+
+## macOS App Configuration Rules:
+
+1.  **Info.plist is Critical:** Ensure the application target's Build Settings correctly point to the intended `Info.plist` file via the `Info.plist File` setting.
+2.  **Info.plist Content:** Verify the `Info.plist` contains essential keys for app launch and permissions, especially:
+    *   `CFBundleIdentifier`: Must be present and linked to the value in Target -> General -> Identity.
+    *   Permission Usage Descriptions (e.g., `NSPhotoLibraryUsageDescription`): Required if accessing protected resources.
+    *   Standard bundle keys (`CFBundleName`, `CFBundleExecutable`, etc.).
+3.  **Info.plist Project Reference:** The `Info.plist` file must be included in the Xcode project structure (visible in the Project Navigator) and have Target Membership checked for the main app target.
+4.  **Entitlements for Permissions:** Accessing protected resources like the Photos Library requires *both* the `Info.plist` usage description key *and* the corresponding capability/entitlement added in Target -> Signing & Capabilities (which updates the `.entitlements` file). Check the **App Sandbox** settings.
+5.  **Clean Builds:** When encountering persistent configuration or build issues after making changes to `Info.plist`, `.entitlements`, or build settings, perform a **Clean Build Folder** (Product menu) and consider deleting **Derived Data**.
+
+## Development Workflow Notes:
+
+*   Early crashes (debugger fails to attach, logging system fails) often point to fundamental configuration issues (`Info.plist`, entitlements, code signing) rather than logic errors in the main code.
+*   Use macOS **Console.app** -> **Crash Reports** to diagnose early launch crashes when Xcode's debugger doesn't provide enough information. 
