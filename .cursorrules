@@ -14,4 +14,20 @@
 ## Development Workflow Notes:
 
 *   Early crashes (debugger fails to attach, logging system fails) often point to fundamental configuration issues (`Info.plist`, entitlements, code signing) rather than logic errors in the main code.
-*   Use macOS **Console.app** -> **Crash Reports** to diagnose early launch crashes when Xcode's debugger doesn't provide enough information. 
+*   Use macOS **Console.app** -> **Crash Reports** to diagnose early launch crashes when Xcode's debugger doesn't provide enough information.
+
+## Project Status & GitHub Integration:
+
+*   **Current Status:** Application is production-ready and fully functional. All core features implemented and tested.
+*   **GitHub Repository:** https://github.com/jtabeling/photo_converter_macos
+*   **Version Control:** Git repository properly configured with comprehensive .gitignore for macOS/Xcode projects.
+*   **Key Features Implemented:**
+    *   HEIC to JPG conversion with full metadata preservation (GPS, camera info, etc.)
+    *   Video conversion to MOV format with metadata preservation
+    *   Organized filename generation based on creation date (YYYY-MM-DD_HH-MM-SS format)
+    *   Title metadata matching filename for both images and videos
+    *   Concurrent processing with progress tracking
+    *   Photos Library integration with proper permissions
+    *   User-selected output folder with security-scoped access
+*   **Architecture:** SwiftUI + ConversionService actor using Swift concurrency for responsive UI and parallel processing.
+*   **Memory Bank:** Comprehensive documentation maintained in memory-bank/ directory (excluded from git via .gitignore). 
