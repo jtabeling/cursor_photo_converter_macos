@@ -1,0 +1,550 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		C48EFF9E2DB69B4A00A86ABA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C48EFF822DB69B4700A86ABA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C48EFF892DB69B4700A86ABA;
+			remoteInfo = "Photo Converter";
+		};
+		C48EFFA82DB69B4A00A86ABA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C48EFF822DB69B4700A86ABA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C48EFF892DB69B4700A86ABA;
+			remoteInfo = "Photo Converter";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C48EFF8A2DB69B4700A86ABA /* Photo Converter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo Converter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C48EFF9D2DB69B4A00A86ABA /* Photo ConverterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Photo ConverterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C48EFFA72DB69B4A00A86ABA /* Photo ConverterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Photo ConverterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C48EFF8C2DB69B4700A86ABA /* Photo Converter */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Photo Converter";
+			sourceTree = "<group>";
+		};
+		C48EFFA02DB69B4A00A86ABA /* Photo ConverterTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Photo ConverterTests";
+			sourceTree = "<group>";
+		};
+		C48EFFAA2DB69B4A00A86ABA /* Photo ConverterUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Photo ConverterUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C48EFF872DB69B4700A86ABA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFF9A2DB69B4A00A86ABA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFFA42DB69B4A00A86ABA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C48EFF812DB69B4700A86ABA = {
+			isa = PBXGroup;
+			children = (
+				C48EFF8C2DB69B4700A86ABA /* Photo Converter */,
+				C48EFFA02DB69B4A00A86ABA /* Photo ConverterTests */,
+				C48EFFAA2DB69B4A00A86ABA /* Photo ConverterUITests */,
+				C48EFF8B2DB69B4700A86ABA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C48EFF8B2DB69B4700A86ABA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C48EFF8A2DB69B4700A86ABA /* Photo Converter.app */,
+				C48EFF9D2DB69B4A00A86ABA /* Photo ConverterTests.xctest */,
+				C48EFFA72DB69B4A00A86ABA /* Photo ConverterUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C48EFF892DB69B4700A86ABA /* Photo Converter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C48EFFB12DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo Converter" */;
+			buildPhases = (
+				C48EFF862DB69B4700A86ABA /* Sources */,
+				C48EFF872DB69B4700A86ABA /* Frameworks */,
+				C48EFF882DB69B4700A86ABA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C48EFF8C2DB69B4700A86ABA /* Photo Converter */,
+			);
+			name = "Photo Converter";
+			packageProductDependencies = (
+			);
+			productName = "Photo Converter";
+			productReference = C48EFF8A2DB69B4700A86ABA /* Photo Converter.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C48EFF9C2DB69B4A00A86ABA /* Photo ConverterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C48EFFB42DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo ConverterTests" */;
+			buildPhases = (
+				C48EFF992DB69B4A00A86ABA /* Sources */,
+				C48EFF9A2DB69B4A00A86ABA /* Frameworks */,
+				C48EFF9B2DB69B4A00A86ABA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C48EFF9F2DB69B4A00A86ABA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C48EFFA02DB69B4A00A86ABA /* Photo ConverterTests */,
+			);
+			name = "Photo ConverterTests";
+			packageProductDependencies = (
+			);
+			productName = "Photo ConverterTests";
+			productReference = C48EFF9D2DB69B4A00A86ABA /* Photo ConverterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C48EFFA62DB69B4A00A86ABA /* Photo ConverterUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C48EFFB72DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo ConverterUITests" */;
+			buildPhases = (
+				C48EFFA32DB69B4A00A86ABA /* Sources */,
+				C48EFFA42DB69B4A00A86ABA /* Frameworks */,
+				C48EFFA52DB69B4A00A86ABA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C48EFFA92DB69B4A00A86ABA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C48EFFAA2DB69B4A00A86ABA /* Photo ConverterUITests */,
+			);
+			name = "Photo ConverterUITests";
+			packageProductDependencies = (
+			);
+			productName = "Photo ConverterUITests";
+			productReference = C48EFFA72DB69B4A00A86ABA /* Photo ConverterUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C48EFF822DB69B4700A86ABA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					C48EFF892DB69B4700A86ABA = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					C48EFF9C2DB69B4A00A86ABA = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = C48EFF892DB69B4700A86ABA;
+					};
+					C48EFFA62DB69B4A00A86ABA = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = C48EFF892DB69B4700A86ABA;
+					};
+				};
+			};
+			buildConfigurationList = C48EFF852DB69B4700A86ABA /* Build configuration list for PBXProject "Photo Converter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C48EFF812DB69B4700A86ABA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C48EFF8B2DB69B4700A86ABA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C48EFF892DB69B4700A86ABA /* Photo Converter */,
+				C48EFF9C2DB69B4A00A86ABA /* Photo ConverterTests */,
+				C48EFFA62DB69B4A00A86ABA /* Photo ConverterUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C48EFF882DB69B4700A86ABA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFF9B2DB69B4A00A86ABA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFFA52DB69B4A00A86ABA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C48EFF862DB69B4700A86ABA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFF992DB69B4A00A86ABA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C48EFFA32DB69B4A00A86ABA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C48EFF9F2DB69B4A00A86ABA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C48EFF892DB69B4700A86ABA /* Photo Converter */;
+			targetProxy = C48EFF9E2DB69B4A00A86ABA /* PBXContainerItemProxy */;
+		};
+		C48EFFA92DB69B4A00A86ABA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C48EFF892DB69B4700A86ABA /* Photo Converter */;
+			targetProxy = C48EFFA82DB69B4A00A86ABA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C48EFFAF2DB69B4A00A86ABA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C48EFFB02DB69B4A00A86ABA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C48EFFB22DB69B4A00A86ABA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Photo Converter/Photo_Converter.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Photo Converter/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-Converter";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C48EFFB32DB69B4A00A86ABA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Photo Converter/Photo_Converter.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Photo Converter/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-Converter";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C48EFFB52DB69B4A00A86ABA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-ConverterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photo Converter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Photo Converter";
+			};
+			name = Debug;
+		};
+		C48EFFB62DB69B4A00A86ABA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-ConverterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Photo Converter.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Photo Converter";
+			};
+			name = Release;
+		};
+		C48EFFB82DB69B4A00A86ABA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-ConverterUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Photo Converter";
+			};
+			name = Debug;
+		};
+		C48EFFB92DB69B4A00A86ABA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "jerry.Photo-ConverterUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Photo Converter";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C48EFF852DB69B4700A86ABA /* Build configuration list for PBXProject "Photo Converter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C48EFFAF2DB69B4A00A86ABA /* Debug */,
+				C48EFFB02DB69B4A00A86ABA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C48EFFB12DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo Converter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C48EFFB22DB69B4A00A86ABA /* Debug */,
+				C48EFFB32DB69B4A00A86ABA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C48EFFB42DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo ConverterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C48EFFB52DB69B4A00A86ABA /* Debug */,
+				C48EFFB62DB69B4A00A86ABA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C48EFFB72DB69B4A00A86ABA /* Build configuration list for PBXNativeTarget "Photo ConverterUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C48EFFB82DB69B4A00A86ABA /* Debug */,
+				C48EFFB92DB69B4A00A86ABA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C48EFF822DB69B4700A86ABA /* Project object */;
+}
