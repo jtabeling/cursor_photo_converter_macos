@@ -25,7 +25,7 @@ struct ContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
-                Button("Select HEIC Images (img*.heic)") {
+                Button("Select Photos & Videos") {
                     selectedPhotoItems = []
                     selectedPhotoIdentifiers = []
                     showPhotosPicker = true
@@ -86,20 +86,13 @@ struct ContentView: View {
         .photosPicker(
             isPresented: $showPhotosPicker,
             selection: $selectedPhotoItems,
-            matching: .images, // Only show images, not videos
+            matching: .any(of: [.images, .videos]), // Show both images and videos
             photoLibrary: .shared()
         )
         .onChange(of: selectedPhotoItems) { _, newItems in
-            Task {
-                let filteredIdentifiers = await filterImagesStartingWithImg(newItems)
-                await MainActor.run {
-                    selectedPhotoIdentifiers = filteredIdentifiers
-                    if !filteredIdentifiers.isEmpty {
-                        statusMessages.append("\(filteredIdentifiers.count) HEIC images starting with 'img' selected.")
-                    } else if !newItems.isEmpty {
-                        statusMessages.append("No images found starting with 'img' and ending with '.heic'.")
-                    }
-                }
+            selectedPhotoIdentifiers = newItems.compactMap { $0.itemIdentifier }
+            if !selectedPhotoIdentifiers.isEmpty {
+                statusMessages.append("\(selectedPhotoIdentifiers.count) photos/videos selected.")
             }
         }
         .fileImporter(
@@ -133,32 +126,6 @@ struct ContentView: View {
         }
     }
 
-    // Function to filter images that start with "img" and have .heic suffix
-    private func filterImagesStartingWithImg(_ items: [PhotosPickerItem]) async -> [String] {
-        var filteredIdentifiers: [String] = []
-        
-        for item in items {
-            guard let identifier = item.itemIdentifier else { continue }
-            
-            // Fetch the PHAsset to check its filename
-            let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil)
-            guard let asset = fetchResult.firstObject else { continue }
-            
-            // Get the asset resources to check the filename
-            let resources = PHAssetResource.assetResources(for: asset)
-            for resource in resources {
-                let filename = resource.originalFilename.lowercased()
-                
-                // Check if filename starts with "img" and ends with ".heic"
-                if filename.hasPrefix("img") && filename.hasSuffix(".heic") {
-                    filteredIdentifiers.append(identifier)
-                    break // Found a matching resource, no need to check others
-                }
-            }
-        }
-        
-        return filteredIdentifiers
-    }
 
     // Function to initiate the conversion task
     private func startConversion(identifiers: [String], outputDirectory: URL) {

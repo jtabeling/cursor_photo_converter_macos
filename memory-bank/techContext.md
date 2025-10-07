@@ -29,7 +29,7 @@
 *   **Build System:** Standard Xcode build system.
 *   **Dependency Management:** None currently needed (using native frameworks).
 *   **Version Control:** Git with GitHub integration
-    *   Repository: https://github.com/jtabeling/photo_converter_macos
+    *   Repository: https://github.com/jtabeling/cursor_photo_converter_macos
     *   Comprehensive .gitignore configured for macOS/Xcode projects
     *   Remote origin properly configured for collaboration and backup
 

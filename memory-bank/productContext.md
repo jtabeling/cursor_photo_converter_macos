@@ -2,22 +2,22 @@
 
 ## Problem Solved
 
-Modern iPhones and other devices often capture photos in the HEIC (High Efficiency Image Container) format. While efficient, HEIC is not universally supported across all platforms, applications, and web services. Users often need to convert these images to the more widely compatible JPG format for sharing, editing, or archiving purposes.
+Modern iPhones and other devices capture photos and videos in various formats (HEIC, JPG, PNG for images; MOV, MP4 for videos). While efficient, some formats like HEIC are not universally supported across all platforms, applications, and web services. Users often need to convert their media to more widely compatible formats (JPG for images, MOV for videos) for sharing, editing, or archiving purposes.
 
-Existing conversion tools might strip important metadata (like GPS location or the original capture date) or fail to update file timestamps correctly, leading to disorganized photo collections and loss of information.
+Existing conversion tools might strip important metadata (like GPS location, camera information, or the original capture date) or fail to update file timestamps correctly, leading to disorganized media collections and loss of valuable information.
 
 ## How It Should Work (User Experience)
 
 1.  The user launches the application.
 2.  The user is presented with a simple interface with buttons to select photos/videos and an output folder.
-3.  The user clicks "Select Media" which opens a PhotosPicker interface to access the Photos Library.
-4.  The user selects one or more media files (HEIC images or videos).
+3.  The user clicks "Select Photos & Videos" which opens a PhotosPicker interface to access the Photos Library.
+4.  The user selects one or more media files (any photos or videos of any format).
 5.  The user selects an output folder using the "Choose Output Folder" button.
 6.  The user initiates conversion by clicking "Start Conversion".
 7.  For each image file:
     *   Extracts the original capture date/time from the EXIF metadata.
     *   Extracts other relevant metadata (especially GPS).
-    *   Converts the HEIC image data to JPG format.
+    *   Converts the image data (HEIC, JPG, PNG, etc.) to JPG format.
     *   Constructs the new filename: `YYYY-MM-DD_HH-MM-SS.jpg`.
     *   Sets the image title metadata to match the filename (without extension).
     *   Saves the JPG image with the new filename.
@@ -27,7 +27,7 @@ Existing conversion tools might strip important metadata (like GPS location or t
 8.  For each video file:
     *   Extracts the original capture date/time.
     *   Constructs the new filename: `YYYY-MM-DD_HH-MM-SS.mov`.
-    *   Exports the video to the MOV format.
+    *   Exports the video (MOV, MP4, etc.) to the MOV format.
     *   Sets the video title metadata to match the filename (without extension).
     *   Preserves original metadata including GPS coordinates and camera information.
     *   Updates the file system creation and modification dates to match the original capture time.

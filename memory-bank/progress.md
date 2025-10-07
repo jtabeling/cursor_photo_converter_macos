@@ -4,16 +4,17 @@
 
 *   **Phase:** Production Ready / Complete
 *   **Date:** 2025-01-27
+*   **Latest Update:** 2025-01-07 - Removed filename and file type restrictions
 
 ## What Works
 
 *   Initial Memory Bank structure created.
 *   Xcode Project (`Photo Converter`) setup with SwiftUI.
-*   Photo selection from macOS Photos Library using `PhotosPicker`.
+*   Unrestricted media selection from macOS Photos Library using `PhotosPicker` (any photos and videos).
 *   Output folder selection using `.fileImporter` with security-scoped bookmarks.
 *   Core conversion process (`ConversionService`):
-    *   HEIC to JPG conversion using `ImageIO`.
-    *   Video conversion from various formats to MOV.
+    *   Image conversion from various formats (HEIC, JPG, PNG, etc.) to JPG using `ImageIO`.
+    *   Video conversion from various formats (MOV, MP4, etc.) to MOV.
     *   Extraction of creation date for filename generation (`YYYY-MM-DD_HH-MM-SS.jpg` or `.mov`).
     *   Preservation of existing metadata (including GPS, camera type) for both images and videos.
     *   Update of EXIF `DateTimeOriginal` tag to match original capture date for images.
@@ -39,9 +40,15 @@
     *   Local git repository initialized with proper .gitignore configuration.
     *   Comprehensive .gitignore file excluding build artifacts, user data, and development files.
     *   Initial commit made with all project files and descriptive commit message.
-    *   GitHub repository created and connected: https://github.com/jtabeling/photo_converter_macos
+    *   GitHub repository created and connected: https://github.com/jtabeling/cursor_photo_converter_macos
     *   Code successfully pushed to GitHub with proper remote origin setup.
     *   Repository ready for collaboration, backup, and version management.
+*   **Unrestricted Media Selection:**
+    *   Removed filename restrictions (no longer limited to `img*.heic` files)
+    *   Removed file type restrictions (accepts any photos and videos)
+    *   Updated PhotosPicker to show both images and videos
+    *   Simplified selection process - all selected media is immediately accepted
+    *   Users can now select any photos (HEIC, JPG, PNG, etc.) and videos (MOV, MP4, etc.) from their Photos Library
 
 ## What's Left to Build / Refine
 

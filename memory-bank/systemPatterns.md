@@ -2,7 +2,7 @@
 
 ## Architecture (Implemented)
 
-*   **UI Layer:** Built with SwiftUI, handles user interaction for photo selection (via PhotosPicker), output directory selection, and progress display.
+*   **UI Layer:** Built with SwiftUI, handles user interaction for unrestricted media selection (photos and videos via PhotosPicker), output directory selection, and progress display.
 *   **Core Logic Layer:** Implemented as `ConversionService` actor:
     *   Orchestrates the entire conversion process
     *   Provides concurrency using Swift concurrency model (async/await, TaskGroup)

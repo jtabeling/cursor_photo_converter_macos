@@ -2,9 +2,10 @@
 
 ## Current Focus
 
-*   Application is fully functional and running successfully.
+*   Application is fully functional and running successfully with unrestricted media selection.
 *   Project has been successfully configured with GitHub repository.
 *   All core functionality implemented and tested.
+*   Filename and file type restrictions have been removed - users can now select any photos and videos.
 *   Ready for production use and potential feature enhancements.
 
 ## Recent Changes
@@ -50,8 +51,14 @@
     *   Initialized local git repository with proper .gitignore for macOS/Xcode projects.
     *   Created comprehensive .gitignore excluding build files, user data, and memory bank documentation.
     *   Made initial commit with all project files and descriptive commit message.
-    *   Connected to GitHub repository: https://github.com/jtabeling/photo_converter_macos
+    *   Connected to GitHub repository: https://github.com/jtabeling/cursor_photo_converter_macos
     *   Pushed code to GitHub with proper remote origin configuration.
+*   **Unrestricted Media Selection:** Removed filename and file type restrictions:
+    *   Updated PhotosPicker to accept both images and videos (`.any(of: [.images, .videos])`)
+    *   Changed button text from "Select HEIC Images (img*.heic)" to "Select Photos & Videos"
+    *   Removed filtering logic that restricted selection to only `img*.heic` files
+    *   Users can now select any photos (HEIC, JPG, PNG, etc.) and videos (MOV, MP4, etc.) from their Photos Library
+    *   Simplified selection process - all selected media is immediately accepted without filtering
 
 ## Next Steps
 
