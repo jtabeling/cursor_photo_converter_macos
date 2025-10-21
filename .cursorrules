@@ -23,7 +23,7 @@
 *   **Version Control:** Git repository properly configured with comprehensive .gitignore for macOS/Xcode projects.
 *   **Key Features Implemented:**
     *   HEIC to JPG conversion with full metadata preservation (GPS, camera info, etc.)
-    *   Video conversion to MOV format with metadata preservation
+    *   Video conversion to MP4 format with metadata preservation
     *   Organized filename generation based on creation date (YYYY-MM-DD_HH-MM-SS format)
     *   Title metadata matching filename for both images and videos
     *   **Controlled concurrent processing** (max 6 at a time) with progress tracking

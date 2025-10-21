@@ -4,7 +4,7 @@
 
 *   **Phase:** Production Ready
 *   **Date:** 2025-10-21
-*   **Latest Update:** 2025-10-21 - Merged logging system and concurrency fixes into main branch
+*   **Latest Update:** 2025-10-21 - Changed video output format from MOV to MP4 for better compatibility
 *   **Branch:** `main`
 
 ## What Works
@@ -15,8 +15,8 @@
 *   Output folder selection using `.fileImporter` with security-scoped bookmarks.
 *   Core conversion process (`ConversionService`):
     *   Image conversion from various formats (HEIC, JPG, PNG, etc.) to JPG using `ImageIO`.
-    *   Video conversion from various formats (MOV, MP4, etc.) to MOV.
-    *   Extraction of creation date for filename generation (`YYYY-MM-DD_HH-MM-SS.jpg` or `.mov`).
+    *   Video conversion from various formats (MOV, MP4, etc.) to MP4.
+    *   Extraction of creation date for filename generation (`YYYY-MM-DD_HH-MM-SS.jpg` or `.mp4`).
     *   Preservation of existing metadata (including GPS, camera type) for both images and videos.
     *   Update of EXIF `DateTimeOriginal` tag to match original capture date for images.
     *   For images: Setting IPTC `ObjectName` and TIFF `ImageDescription` metadata to match the filename (without extension).
@@ -67,6 +67,11 @@
     *   Prevents "Cannot Save" errors from system overload
     *   Significantly improved stability when processing large batches (e.g., 141 videos)
     *   Maintains responsive UI during bulk operations
+*   **MP4 Video Output (2025-10-21):**
+    *   Changed video conversion output format from MOV to MP4
+    *   Output filename pattern: `YYYY-MM-DD_HH-MM-SS.mp4`
+    *   More widely compatible format for cross-platform sharing
+    *   All metadata preservation features maintained (GPS, camera info, title)
 
 ## What's Left to Build / Refine
 

@@ -2,7 +2,7 @@
 
 ## Problem Solved
 
-Modern iPhones and other devices capture photos and videos in various formats (HEIC, JPG, PNG for images; MOV, MP4 for videos). While efficient, some formats like HEIC are not universally supported across all platforms, applications, and web services. Users often need to convert their media to more widely compatible formats (JPG for images, MOV for videos) for sharing, editing, or archiving purposes.
+Modern iPhones and other devices capture photos and videos in various formats (HEIC, JPG, PNG for images; MOV, MP4 for videos). While efficient, some formats like HEIC are not universally supported across all platforms, applications, and web services. Users often need to convert their media to more widely compatible formats (JPG for images, MP4 for videos) for sharing, editing, or archiving purposes.
 
 Existing conversion tools might strip important metadata (like GPS location, camera information, or the original capture date) or fail to update file timestamps correctly, leading to disorganized media collections and loss of valuable information.
 
@@ -26,8 +26,8 @@ Existing conversion tools might strip important metadata (like GPS location, cam
     *   Updates the file system creation and modification dates of the new JPG file to match the original capture time.
 8.  For each video file:
     *   Extracts the original capture date/time.
-    *   Constructs the new filename: `YYYY-MM-DD_HH-MM-SS.mov`.
-    *   Exports the video (MOV, MP4, etc.) to the MOV format.
+    *   Constructs the new filename: `YYYY-MM-DD_HH-MM-SS.mp4`.
+    *   Exports the video (MOV, MP4, etc.) to the MP4 format.
     *   Sets the video title metadata to match the filename (without extension).
     *   Preserves original metadata including GPS coordinates and camera information.
     *   Updates the file system creation and modification dates to match the original capture time.

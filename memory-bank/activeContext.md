@@ -82,6 +82,12 @@
     *   Removed filtering logic that restricted selection to only `img*.heic` files
     *   Users can now select any photos (HEIC, JPG, PNG, etc.) and videos (MOV, MP4, etc.) from their Photos Library
     *   Simplified selection process - all selected media is immediately accepted without filtering
+*   **MP4 Video Output Format (2025-10-21):** Changed video conversion output format from MOV to MP4:
+    *   Updated output filename extension from `.mov` to `.mp4`
+    *   Changed `AVAssetExportSession.outputFileType` from `.mov` to `.mp4` in all export operations
+    *   Updated temporary file naming to use `.mp4` extension
+    *   All metadata preservation features remain intact (GPS, camera info, title matching)
+    *   More widely compatible format for cross-platform sharing and playback
 
 ## Next Steps
 

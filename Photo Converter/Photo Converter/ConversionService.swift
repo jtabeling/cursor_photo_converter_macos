@@ -313,8 +313,8 @@ actor ConversionService {
             return .failure(.missingCreationDate(asset.localIdentifier))
         }
         
-        // Create filename with date/time and .mov extension
-        let outputFilename = filenameDateFormatter.string(from: creationDate) + ".mov"
+        // Create filename with date/time and .mp4 extension
+        let outputFilename = filenameDateFormatter.string(from: creationDate) + ".mp4"
         let outputFileURL = outputDirectory.appendingPathComponent(outputFilename)
         logger.log("Target output file: \(outputFileURL.path)", level: .info)
         
@@ -575,12 +575,12 @@ actor ConversionService {
                         
                         // Configure export with metadata
                         exportSession.outputURL = outputURL
-                        exportSession.outputFileType = .mov
+                        exportSession.outputFileType = .mp4
                         exportSession.metadata = exportMetadata
                         
                         self.logger.log("Export metadata count: \(exportMetadata.count)", level: .debug)
                         self.logger.log("Output URL: \(outputURL.path)", level: .debug)
-                        self.logger.log("Output file type: .mov", level: .debug)
+                        self.logger.log("Output file type: .mp4", level: .debug)
                         
                         // Use a continuation to wait for the export
                         try await withCheckedThrowingContinuation { (exportContinuation: CheckedContinuation<Void, Error>) in
@@ -662,7 +662,7 @@ actor ConversionService {
         }
         
         // Create a temporary output file URL
-        let tempFilename = UUID().uuidString + ".mov"
+        let tempFilename = UUID().uuidString + ".mp4"
         let tempURL = fileURL.deletingLastPathComponent().appendingPathComponent(tempFilename)
         
         // Create an export session to add metadata
@@ -713,7 +713,7 @@ actor ConversionService {
         
         // Configure export
         exportSession.outputURL = tempURL
-        exportSession.outputFileType = .mov
+        exportSession.outputFileType = .mp4
         
         // Export asynchronously
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -749,7 +749,7 @@ actor ConversionService {
         let asset = AVAsset(url: fileURL)
         
         // Create a temporary output file URL
-        let tempFilename = UUID().uuidString + ".mov"
+        let tempFilename = UUID().uuidString + ".mp4"
         let tempURL = fileURL.deletingLastPathComponent().appendingPathComponent(tempFilename)
         
         // Create an export session to add metadata
@@ -827,7 +827,7 @@ actor ConversionService {
         
         // Configure export
         exportSession.outputURL = tempURL
-        exportSession.outputFileType = .mov
+        exportSession.outputFileType = .mp4
         
         // Export asynchronously
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
