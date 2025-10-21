@@ -2,9 +2,10 @@
 
 ## Current Status
 
-*   **Phase:** Production Ready / Complete
-*   **Date:** 2025-01-27
-*   **Latest Update:** 2025-01-07 - Removed filename and file type restrictions
+*   **Phase:** Enhancement / Debugging
+*   **Date:** 2025-10-21
+*   **Latest Update:** 2025-10-21 - Added comprehensive logging system and fixed concurrency issues
+*   **Branch:** `added-logger-2025-10-21`
 
 ## What Works
 
@@ -49,14 +50,36 @@
     *   Updated PhotosPicker to show both images and videos
     *   Simplified selection process - all selected media is immediately accepted
     *   Users can now select any photos (HEIC, JPG, PNG, etc.) and videos (MOV, MP4, etc.) from their Photos Library
+*   **Comprehensive Logging System (2025-10-21):**
+    *   New `Logger.swift` class with thread-safe logging using NSLock
+    *   Immediate file writes with `synchronize()` for crash-resistant debugging
+    *   Log files stored in sandbox-safe location: `~/Library/Containers/jerry.Photo-Converter/Data/Library/Application Support/Photo Converter/`
+    *   Detailed logging of:
+        *   Asset information (dimensions, media type, GPS coordinates, creation dates)
+        *   Video resource details (original filename, UTI, resource type)
+        *   Export session configurations and metadata counts
+        *   Specific error messages with context
+    *   Logger initialized at app launch to capture all activity
+    *   Log file path displayed to users in completion status
+*   **Controlled Concurrency (2025-10-21):**
+    *   Limited concurrent asset processing to maximum of 6 at a time
+    *   Queue-based processing: new conversions start as previous ones complete
+    *   Prevents "Cannot Save" errors from system overload
+    *   Significantly improved stability when processing large batches (e.g., 141 videos)
+    *   Maintains responsive UI during bulk operations
 
 ## What's Left to Build / Refine
 
-*   **Project Complete:** All core functionality has been implemented and tested successfully.
+*   **Current Testing Phase:**
+    *   Validate logging system captures useful debugging information
+    *   Analyze log files from failed video conversions to identify patterns
+    *   Test stability with large batches (100+ videos) using new concurrency limits
+*   **Pending:**
+    *   Merge `added-logger-2025-10-21` branch to main after validation
+    *   Address specific video conversion failures if patterns emerge from logs
 *   **Optional Future Enhancements:**
     *   Additional output format support (PNG, TIFF, etc.).
     *   Advanced metadata editing capabilities.
-    *   Batch processing optimizations for very large collections.
     *   Integration with cloud storage services.
     *   Command-line interface for automation.
     *   User documentation and help system.
@@ -75,4 +98,6 @@
 *   **RESOLVED:** Camera type metadata not being preserved in converted video files.
 *   **IMPLEMENTED:** Image and video titles now match the filename without extension.
 *   **COMPLETED:** GitHub repository setup and version control configuration.
-*   **STATUS:** No known outstanding issues. Application is production-ready and fully functional. 
+*   **RESOLVED (2025-10-21):** Application crashes when processing large batches of videos (141+) due to unlimited concurrent processing causing "Cannot Save" file system errors. Fixed by implementing concurrency limit of 6.
+*   **IN PROGRESS:** Some videos still fail conversion with "Cannot Save" errors. Logging system now in place to diagnose specific failure patterns (4K videos, specific codecs, etc.).
+*   **STATUS:** Core functionality stable. Logging and performance improvements in testing phase on `added-logger-2025-10-21` branch. 

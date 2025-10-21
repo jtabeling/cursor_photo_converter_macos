@@ -18,16 +18,43 @@
 
 ## Project Status & GitHub Integration:
 
-*   **Current Status:** Application is production-ready and fully functional. All core features implemented and tested.
-*   **GitHub Repository:** https://github.com/jtabeling/photo_converter_macos
+*   **Current Status:** Core functionality complete. Logging and performance improvements in testing on `added-logger-2025-10-21` branch.
+*   **GitHub Repository:** https://github.com/jtabeling/cursor_photo_converter_macos
 *   **Version Control:** Git repository properly configured with comprehensive .gitignore for macOS/Xcode projects.
 *   **Key Features Implemented:**
     *   HEIC to JPG conversion with full metadata preservation (GPS, camera info, etc.)
     *   Video conversion to MOV format with metadata preservation
     *   Organized filename generation based on creation date (YYYY-MM-DD_HH-MM-SS format)
     *   Title metadata matching filename for both images and videos
-    *   Concurrent processing with progress tracking
+    *   **Controlled concurrent processing** (max 6 at a time) with progress tracking
+    *   **Comprehensive logging system** for debugging and crash analysis
     *   Photos Library integration with proper permissions
     *   User-selected output folder with security-scoped access
-*   **Architecture:** SwiftUI + ConversionService actor using Swift concurrency for responsive UI and parallel processing.
-*   **Memory Bank:** Comprehensive documentation maintained in memory-bank/ directory (excluded from git via .gitignore). 
+*   **Architecture:** SwiftUI + ConversionService actor using Swift concurrency for responsive UI and controlled parallel processing + Logger singleton for crash-resistant debugging.
+*   **Memory Bank:** Comprehensive documentation maintained in memory-bank/ directory (excluded from git via .gitignore).
+
+## Concurrency & Performance Patterns (Learned 2025-10-21):
+
+1.  **Concurrency Limits are Critical:** 
+    *   Processing 100+ videos simultaneously causes "Cannot Save" file system errors
+    *   macOS has limits on concurrent file operations and open file handles
+    *   Solution: Limit concurrent conversions to 6 using queue-based processing
+    *   Pattern: Start N tasks, as each completes, start the next one from the queue
+
+2.  **Logging in Sandboxed Apps:**
+    *   Cannot write to Documents folder from sandboxed app
+    *   Must use Application Support: `~/Library/Containers/[bundle-id]/Data/Library/Application Support/`
+    *   Use `FileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask)`
+    *   Create app-specific subdirectory for organization
+
+3.  **Crash-Resistant Logging:**
+    *   Use synchronous writes with `FileHandle.write()` + `synchronize()` for immediate disk flush
+    *   Avoid `DispatchQueue.async` in logging - causes deadlocks with actors
+    *   Use `NSLock` for thread safety instead of async queues
+    *   Singleton pattern allows access from both actors and regular code
+
+4.  **Debugging Large Batch Processing:**
+    *   Log asset details at start of processing (dimensions, GPS, filename, UTI)
+    *   Log export configuration (metadata counts, output paths)
+    *   Log both success and failure outcomes with context
+    *   Include timestamps for performance analysis 

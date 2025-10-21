@@ -2,13 +2,36 @@
 
 ## Current Focus
 
-*   Application is fully functional and running successfully with unrestricted media selection.
-*   Project has been successfully configured with GitHub repository.
-*   All core functionality implemented and tested.
-*   Filename and file type restrictions have been removed - users can now select any photos and videos.
-*   Ready for production use and potential feature enhancements.
+*   **Debugging and Performance Enhancement:** Added comprehensive logging system to diagnose video conversion failures.
+*   **Concurrency Management:** Fixed crash issues caused by excessive concurrent processing (141 videos at once).
+*   **Production Stability:** Application now processes media in controlled batches to prevent system overload.
+*   **Branch:** Working on `added-logger-2025-10-21` branch with logging and performance improvements.
 
 ## Recent Changes
+
+*   **Comprehensive Logging System (2025-10-21):**
+    *   Created new `Logger.swift` class for crash-resistant debugging.
+    *   Implemented thread-safe logging with NSLock for concurrent operations.
+    *   Log files saved to sandbox-compatible location: `~/Library/Containers/jerry.Photo-Converter/Data/Library/Application Support/Photo Converter/`.
+    *   Immediate disk writes with `synchronize()` to capture data before crashes.
+    *   Comprehensive logging throughout conversion process:
+        *   Asset information (dimensions, GPS data, creation dates).
+        *   Video resource details (original filename, UTI, resource type).
+        *   Export session status and metadata counts.
+        *   Detailed error messages with specific failure points.
+    *   Logger initialized at app launch to capture all activity.
+    *   Log file path displayed to user in completion status.
+*   **Concurrency Limit Implementation (2025-10-21):**
+    *   Discovered crash issue: app was processing 141 videos simultaneously causing "Cannot Save" errors.
+    *   Implemented controlled concurrency with maximum 6 concurrent asset conversions.
+    *   Queue-based processing: as each conversion completes, next asset begins.
+    *   Prevents file system overload and memory exhaustion.
+    *   Maintains responsive UI while processing large batches.
+    *   Significantly improved stability for bulk operations.
+*   **Git Branch Management (2025-10-21):**
+    *   Created new branch `added-logger-2025-10-21` for logging and performance improvements.
+    *   Committed changes: Logger.swift (new), ConversionService.swift (updated), Photo_ConverterApp.swift (updated).
+    *   Pushed branch to GitHub: https://github.com/jtabeling/cursor_photo_converter_macos/tree/added-logger-2025-10-21
 
 *   Created Xcode project (`Photo Converter`) using SwiftUI.
 *   Configured `Info.plist` for Photos Library access.
@@ -62,15 +85,16 @@
 
 ## Next Steps
 
-1.  **Production Use:** The application is ready for regular use. All core functionality has been implemented and tested.
-2.  **Optional Enhancements:** Consider future improvements based on user feedback:
-    *   Batch processing optimizations for very large photo collections.
+1.  **Testing:** Validate the logging system captures useful debugging information for video conversion failures.
+2.  **Analysis:** Review log files from failed conversions to identify root causes (4K videos, specific codecs, etc.).
+3.  **Merge:** After validation, merge `added-logger-2025-10-21` branch into main branch.
+4.  **Further Optimization:** If specific failure patterns emerge, implement targeted fixes for problematic video types.
+5.  **Optional Enhancements:** Consider future improvements:
     *   Additional output format options (PNG, TIFF, etc.).
     *   Advanced metadata editing capabilities.
     *   Integration with cloud storage services.
     *   Command-line interface for automation.
-3.  **Maintenance:** Regular updates to maintain compatibility with new macOS versions and frameworks.
-4.  **Documentation:** Consider adding user documentation or help system for end users.
+6.  **Maintenance:** Regular updates to maintain compatibility with new macOS versions and frameworks.
 
 ## Active Decisions/Considerations
 
@@ -78,12 +102,13 @@
 *   **Image Conversion/Metadata:** `ImageIO` (Implemented).
 *   **Video Conversion/Metadata:** Combination of `PHAssetResourceManager` for export and `AVFoundation` for metadata (Implemented).
 *   **File Access:** `PhotosUI` (`PhotosPicker`) for input, `.fileImporter` for output directory (Implemented).
-*   **Concurrency:** Swift concurrency (`async/await`, `TaskGroup`, `Actor`) (Implemented).
+*   **Concurrency:** Swift concurrency (`async/await`, `TaskGroup`, `Actor`) with **controlled concurrency limit of 6** to prevent system overload (Implemented 2025-10-21).
+*   **Logging Strategy:** Comprehensive logging system with immediate disk writes for crash debugging, sandbox-compatible storage location (Implemented 2025-10-21).
 *   **Output Location:** User-selected output folder (Implemented).
 *   **Duplicate Handling:** Overwrite (Implemented).
-*   **Error Handling Strategy:** Skip problematic files, continue processing, report summary and individual errors (Implemented).
-*   **Security Scope Cleanup:** Implemented basic cleanup (`onDisappear`, explicit stop on new folder selection). Further review during refinement might be needed for complex scenarios.
+*   **Error Handling Strategy:** Skip problematic files, continue processing, report summary and individual errors, log detailed debugging information (Enhanced 2025-10-21).
+*   **Security Scope Cleanup:** Implemented basic cleanup (`onDisappear`, explicit stop on new folder selection).
 *   **Video Metadata Strategy:** Preserve all original metadata while selectively updating title and location (Implemented).
-*   **Metadata Consistency:** Title metadata now consistently set to match the filename (without extension) across both images and videos.
-*   **Version Control:** Git repository configured with proper .gitignore and GitHub integration for collaboration and backup.
-*   **Project Status:** All core functionality implemented and tested. Application is production-ready. 
+*   **Metadata Consistency:** Title metadata consistently set to match the filename (without extension) across both images and videos.
+*   **Version Control:** Git repository configured with proper .gitignore and GitHub integration. Currently on `added-logger-2025-10-21` branch.
+*   **Project Status:** Core functionality complete. Logging and performance improvements in testing phase. 

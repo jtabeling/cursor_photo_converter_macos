@@ -20,8 +20,9 @@
 *   **Media Access:**
     *   `PhotosUI` for Photos Library access and selection via `PhotosPicker`
     *   `PhotosKit` (`Photos` framework) for fetching and working with media assets (`PHAsset`, `PHImageManager`)
-*   **Foundation:** For file system operations (`FileManager`, `URL`), date/time formatting (`DateFormatter`), basic data types.
-*   **Concurrency:** Swift Concurrency (`async`/`await`, `Task`, `TaskGroup`, `Actor`).
+*   **Foundation:** For file system operations (`FileManager`, `URL`), date/time formatting (`DateFormatter`), basic data types, thread synchronization (`NSLock`).
+*   **Concurrency:** Swift Concurrency (`async`/`await`, `Task`, `TaskGroup`, `Actor`) with controlled parallelism.
+*   **Logging (2025-10-21):** Custom `Logger` class using `FileHandle` for immediate writes and `NSLock` for thread safety.
 
 ## Development Setup
 
@@ -36,8 +37,17 @@
 ## Technical Constraints/Considerations
 
 *   Requires macOS APIs for file access, image/video conversion, and metadata manipulation.
-*   Performance: Conversion can be resource-intensive. Need efficient implementation, especially for batch processing. Using Swift Concurrency for parallelism.
+*   Performance: Conversion can be resource-intensive. Need efficient implementation, especially for batch processing. Using Swift Concurrency with controlled parallelism (max 6 concurrent operations).
+*   Concurrency Management (2025-10-21): 
+    *   Unlimited concurrent processing causes "Cannot Save" file system errors
+    *   Large batches (100+ videos) overwhelm system resources
+    *   Solution: Queue-based processing with maximum 6 concurrent conversions
 *   Error Handling: Robust handling for file I/O errors, invalid formats, missing metadata, permissions issues.
+*   Debugging Strategy (2025-10-21):
+    *   Comprehensive logging system for crash diagnosis
+    *   Thread-safe logging compatible with Swift actors
+    *   Sandbox constraints require Application Support directory for log storage
+    *   Immediate disk writes necessary to capture pre-crash state
 *   Metadata Standards: 
     *   EXIF for images (e.g., `kCGImagePropertyExifDateTimeOriginal`, `kCGImagePropertyGPSDictionary`)
     *   IPTC for image titles (e.g., `kCGImagePropertyIPTCObjectName`)
