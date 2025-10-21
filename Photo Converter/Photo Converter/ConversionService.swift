@@ -6,6 +6,8 @@ import AppKit // For NSBitmapImageRep specific things if needed, maybe just Imag
 import AVFoundation // Added for video processing
 
 actor ConversionService {
+    
+    private let logger = Logger.shared
 
     enum ConversionError: LocalizedError {
         case authorizationDenied(String)
@@ -124,54 +126,96 @@ actor ConversionService {
         }
 
         await progressHandler(0, "Starting conversion for \(fetchResult.count) media items...")
+        logger.log("=== Starting Conversion Session ===", level: .info)
+        logger.log("Total assets to process: \(fetchResult.count)", level: .info)
+        logger.log("Output directory: \(outputDirectory.path)", level: .info)
 
-        // --- 4. Process Assets Concurrently ---
+        // --- 4. Process Assets Concurrently (with limited concurrency) ---
         await withTaskGroup(of: Result<String, ConversionError>.self) { group in
-            for i in 0..<fetchResult.count {
-                let asset = fetchResult.object(at: i)
-
+            var nextIndex = 0
+            let maxConcurrent = 6 // Limit concurrent video/image processing to prevent system overload
+            
+            // Start initial batch
+            for _ in 0..<min(maxConcurrent, fetchResult.count) {
+                let asset = fetchResult.object(at: nextIndex)
+                let index = nextIndex
+                nextIndex += 1
+                
                 group.addTask {
                     // This closure runs concurrently for each asset
                     if asset.mediaType == .video {
+                        self.logger.log("Processing video asset \(index+1) of \(fetchResult.count)", level: .info)
                         return await self.processVideoAsset(asset: asset, outputDirectory: outputDirectory)
                     } else {
+                        self.logger.log("Processing image asset \(index+1) of \(fetchResult.count)", level: .info)
                         return await self.processImageAsset(asset: asset, outputDirectory: outputDirectory)
                     }
                 }
             }
 
-            // Collect results as they complete
+            // Collect results as they complete and start new tasks
             for await result in group {
                 processedCount += 1
-                let progress = Double(processedCount) / Double(fetchResult.count) // Use fetchResult.count which might be less than totalAssets
+                let progress = Double(processedCount) / Double(fetchResult.count)
 
                 switch result {
                 case .success(let successMessage):
                     await progressHandler(progress, successMessage)
                 case .failure(let error):
                     errorMessages.append(error.localizedDescription)
-                    // Still report progress, but with error context if possible
                     await progressHandler(progress, "Error processing asset: \(error.localizedDescription)")
+                }
+                
+                // Start next task if there are more assets to process
+                if nextIndex < fetchResult.count {
+                    let asset = fetchResult.object(at: nextIndex)
+                    let index = nextIndex
+                    nextIndex += 1
+                    
+                    group.addTask {
+                        if asset.mediaType == .video {
+                            self.logger.log("Processing video asset \(index+1) of \(fetchResult.count)", level: .info)
+                            return await self.processVideoAsset(asset: asset, outputDirectory: outputDirectory)
+                        } else {
+                            self.logger.log("Processing image asset \(index+1) of \(fetchResult.count)", level: .info)
+                            return await self.processImageAsset(asset: asset, outputDirectory: outputDirectory)
+                        }
+                    }
                 }
             }
         }
+        
+        logger.log("All assets processed. Successful: \(fetchResult.count - errorMessages.count), Failed: \(errorMessages.count)", level: .info)
 
         // --- 5. Completion ---
         let finalMessage = "Conversion complete. \(fetchResult.count - errorMessages.count) succeeded, \(errorMessages.count) failed."
         await progressHandler(1.0, finalMessage) // Ensure progress hits 100%
+        logger.log("=== Conversion Session Complete ===", level: .info)
+        logger.log("Success: \(fetchResult.count - errorMessages.count), Failed: \(errorMessages.count)", level: .info)
+        
+        // Add log file location to the status messages
+        let logPath = logger.getLogFilePath()
+        logger.log("Log file saved at: \(logPath)", level: .info)
+        
         errorMessages.insert(finalMessage, at: 0) // Add summary as first item
+        errorMessages.append("") // Add blank line
+        errorMessages.append("📄 Log file: \(logPath)") // Add log file location
         await completionHandler(errorMessages)
     }
 
     // --- Helper function to process a single image asset ---
     private func processImageAsset(asset: PHAsset, outputDirectory: URL) async -> Result<String, ConversionError> {
+        logger.log("--- Processing Image Asset ---", level: .info)
+        logger.log("Asset ID: \(asset.localIdentifier)", level: .debug)
+        
         // --- 4a. Get Creation Date ---
         guard let creationDate = asset.creationDate else {
-            // Maybe fallback to EXIF here if needed? PHAsset.creationDate should be reliable though.
+            logger.logError("Missing creation date for image asset: \(asset.localIdentifier)")
             return .failure(.missingCreationDate(asset.localIdentifier))
         }
         let outputFilename = filenameDateFormatter.string(from: creationDate) + ".jpg"
         let outputFileURL = outputDirectory.appendingPathComponent(outputFilename)
+        logger.log("Target output file: \(outputFileURL.path)", level: .debug)
 
         // --- 4b. Request Image Data and Metadata ---
         let requestOptions = PHImageRequestOptions()
@@ -243,9 +287,11 @@ actor ConversionService {
              } catch {
                  // Log error but don't fail the whole conversion for this? Maybe return warning message?
                  // For now, return failure.
+                 logger.logError("Failed to update file timestamps", error: error)
                  return .failure(.timestampUpdateFailed(outputFileURL.path, error))
              }
 
+            logger.log("✅ Image converted successfully: \(outputFilename)", level: .info)
             return .success("Converted: \(outputFilename)")
 
         } catch let error as ConversionError {
@@ -257,41 +303,44 @@ actor ConversionService {
     
     // --- Helper function to process a video asset ---
     private func processVideoAsset(asset: PHAsset, outputDirectory: URL) async -> Result<String, ConversionError> {
+        logger.log("--- Processing Video Asset ---", level: .info)
+        logger.logAssetInfo(asset)
+        logger.logVideoResourceInfo(asset)
+        
         // Get creation date for filename
         guard let creationDate = asset.creationDate else {
+            logger.logError("Missing creation date for asset: \(asset.localIdentifier)")
             return .failure(.missingCreationDate(asset.localIdentifier))
         }
         
         // Create filename with date/time and .mov extension
         let outputFilename = filenameDateFormatter.string(from: creationDate) + ".mov"
         let outputFileURL = outputDirectory.appendingPathComponent(outputFilename)
+        logger.log("Target output file: \(outputFileURL.path)", level: .info)
         
         // Check if output file already exists and remove it
         if fileManager.fileExists(atPath: outputFileURL.path) {
+            logger.log("Removing existing file at output path", level: .warning)
             do {
                 try fileManager.removeItem(at: outputFileURL)
             } catch {
+                logger.logError("Failed to remove existing file", error: error)
                 return .failure(.videoExportFailed(asset.localIdentifier, error))
             }
         }
         
         // Log location info for debugging
         if let location = asset.location {
-            print("Video has GPS data: lat=\(location.coordinate.latitude), lon=\(location.coordinate.longitude), alt=\(location.altitude)")
+            logger.log("Video has GPS data: lat=\(location.coordinate.latitude), lon=\(location.coordinate.longitude), alt=\(location.altitude)", level: .debug)
         } else {
-            print("Video has NO GPS data")
-        }
-        
-        // Also check the asset's metadata directly for debugging
-        let assetResources = PHAssetResource.assetResources(for: asset)
-        print("Asset resources count: \(assetResources.count)")
-        for resource in assetResources {
-            print("Resource type: \(resource.type.rawValue), filename: \(resource.originalFilename)")
+            logger.log("Video has NO GPS data", level: .warning)
         }
         
         // Try AVAssetExportSession first as it better preserves metadata
+        logger.log("Attempting video export with AVAssetExportSession", level: .info)
         do {
             try await exportVideoWithExportSession(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
+            logger.log("AVAssetExportSession completed successfully", level: .info)
             
             // Update file timestamps
             do {
@@ -307,18 +356,22 @@ actor ConversionService {
             if fileManager.fileExists(atPath: outputFileURL.path),
                let fileAttributes = try? fileManager.attributesOfItem(atPath: outputFileURL.path),
                let fileSize = fileAttributes[.size] as? UInt64, fileSize > 0 {
+                logger.log("✅ Video processed successfully: \(outputFilename), size: \(fileSize) bytes", level: .info)
                 return .success("Processed video: \(outputFilename) with direct resource export")
             } else {
+                logger.log("Output file missing or empty after export, will try fallback method", level: .warning)
                 // If file doesn't exist or has zero size, throw an error to try the fallback method
                 throw ConversionError.videoExportFailed(asset.localIdentifier, nil)
             }
         } 
         catch {
-            print("First method failed: \(error.localizedDescription). Trying fallback method...")
+            logger.logError("AVAssetExportSession method failed", error: error)
+            logger.log("Trying fallback method (PHAssetResource)", level: .info)
             
             // If export session failed, try the direct resource export approach
             do {
                 try await exportVideoWithAssetResource(asset: asset, outputURL: outputFileURL, creationDate: creationDate)
+                logger.log("Fallback method completed successfully", level: .info)
                 
                 // Update file timestamps
                 do {
@@ -330,10 +383,12 @@ actor ConversionService {
                     return .failure(.timestampUpdateFailed(outputFileURL.path, error))
                 }
                 
+                logger.log("✅ Video processed successfully with fallback method: \(outputFilename)", level: .info)
                 return .success("Processed video with export session fallback: \(outputFilename)")
             }
             catch let fallbackError {
-                print("Both video export methods failed: \(fallbackError)")
+                logger.logError("❌ Both video export methods failed", error: fallbackError)
+                logger.log("Final failure for asset: \(asset.localIdentifier)", level: .error)
                 return .failure(.videoExportFailed(asset.localIdentifier, fallbackError))
             }
         }
@@ -341,12 +396,15 @@ actor ConversionService {
     
     // Fallback export method using PHAssetResource - this should preserve metadata better
     private func exportVideoWithAssetResource(asset: PHAsset, outputURL: URL, creationDate: Date) async throws {
+        logger.log("Starting PHAssetResource export", level: .info)
+        
         // Get the video resource from the asset
         guard let assetResource = PHAssetResource.assetResources(for: asset).first(where: { $0.type == .video }) else {
+            logger.log("No video resource found in asset", level: .error)
             throw ConversionError.videoExportFailed(asset.localIdentifier, nil)
         }
         
-        print("Exporting video using PHAssetResource: \(assetResource.originalFilename)")
+        logger.log("Exporting video using PHAssetResource: \(assetResource.originalFilename)", level: .info)
         
         // Request the resource data
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
@@ -416,28 +474,31 @@ actor ConversionService {
     
     // Primary export method using PHImageManager.requestExportSession with enhanced metadata handling
     private func exportVideoWithExportSession(asset: PHAsset, outputURL: URL, creationDate: Date) async throws {
-        print("Trying export session approach")
+        logger.log("Starting exportVideoWithExportSession", level: .info)
         
         let options = PHVideoRequestOptions()
         options.version = .original // Use original to preserve all metadata
         options.deliveryMode = .highQualityFormat
         options.isNetworkAccessAllowed = true
+        logger.log("PHVideoRequestOptions configured: version=.original, deliveryMode=.highQualityFormat", level: .debug)
         
         // Use continuation to handle the asynchronous PHImageManager request
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             imageManager.requestExportSession(forVideo: asset, options: options, exportPreset: AVAssetExportPresetPassthrough) { exportSession, info in
                 // Check for errors in the info dictionary
                 if let error = info?[PHImageErrorKey] as? Error {
-                    print("Export session creation failed: \(error.localizedDescription)")
+                    self.logger.logError("Export session creation failed", error: error)
                     continuation.resume(throwing: ConversionError.videoExportFailed(asset.localIdentifier, error))
                     return
                 }
                 
                 guard let exportSession = exportSession else {
-                    print("Export session is nil")
+                    self.logger.log("Export session is nil", level: .error)
                     continuation.resume(throwing: ConversionError.videoExportFailed(asset.localIdentifier, nil))
                     return
                 }
+                
+                self.logger.log("Export session created successfully", level: .debug)
                 
                 // Get the AVAsset to access its metadata
                 let avAsset = exportSession.asset
@@ -517,23 +578,26 @@ actor ConversionService {
                         exportSession.outputFileType = .mov
                         exportSession.metadata = exportMetadata
                         
-                        print("Export metadata count: \(exportMetadata.count)")
+                        self.logger.log("Export metadata count: \(exportMetadata.count)", level: .debug)
+                        self.logger.log("Output URL: \(outputURL.path)", level: .debug)
+                        self.logger.log("Output file type: .mov", level: .debug)
                         
                         // Use a continuation to wait for the export
                         try await withCheckedThrowingContinuation { (exportContinuation: CheckedContinuation<Void, Error>) in
+                            self.logger.log("Starting exportAsynchronously", level: .debug)
                             exportSession.exportAsynchronously {
                                 switch exportSession.status {
                                 case .completed:
-                                    print("Export session completed successfully")
+                                    self.logger.log("Export session completed successfully", level: .info)
                                     exportContinuation.resume()
                                 case .failed:
-                                    print("Export session failed: \(exportSession.error?.localizedDescription ?? "unknown error")")
+                                    self.logger.logError("Export session failed with status .failed", error: exportSession.error)
                                     exportContinuation.resume(throwing: ConversionError.videoExportFailed(asset.localIdentifier, exportSession.error))
                                 case .cancelled:
-                                    print("Export session cancelled")
+                                    self.logger.log("Export session cancelled", level: .error)
                                     exportContinuation.resume(throwing: ConversionError.videoExportFailed(asset.localIdentifier, nil))
                                 default:
-                                    print("Export session ended with unexpected status: \(exportSession.status.rawValue)")
+                                    self.logger.log("Export session ended with unexpected status: \(exportSession.status.rawValue)", level: .error)
                                     exportContinuation.resume(throwing: ConversionError.videoExportFailed(asset.localIdentifier, nil))
                                 }
                             }
